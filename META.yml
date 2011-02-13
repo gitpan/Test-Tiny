@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Test-Tiny
-version:            0.01
+version:            0.02
 abstract:           Simple testing, simply.
 author:
     - Sean O'Rourke 

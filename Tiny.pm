@@ -17,28 +17,26 @@ Test::Tiny -- Write simple tests, simply.
 
 =cut
 
-$VERSION = '0.01';
-$SUCC = 0;
-$FAIL = 0;
+$VERSION = '0.02';
 
 sub import
 {
     my $caller = caller;
-    *{"$caller\::$_"} = \&$_ for qw(ok show skip BAIL_OUT);
-    die "No plan.\n" unless @_ == 3;
-    print '1..', $_[2], "\n";
+    *{"$caller\::$_"} = \&$_ for qw(ok show skip BAIL_OUT done_testing);
+    $PLAN = @_ == 3 ? 0+$_[2] : -1;
+    print "1..", $PLAN < 0 ? 0 : $PLAN, "\n";
 }
 
 sub ok
 {
     my $res = shift;
     if ($res) {
-        ++$SUCC
+        ++$SUCC;
     } else {
         print "not ";
         ++$FAIL;
     }
-    my $desc = shift || '';
+    (my $desc = shift || '') =~ s/\n/\n# /g;
     print "ok ", $SUCC + $FAIL, ($desc ? " - $desc" : ""), "\n";
     if (!$res) {
         my ($pack, $file, $line, $i);
@@ -63,12 +61,20 @@ sub skip
 sub BAIL_OUT
 {
     print "Bail out!", @_, "\n";
-    $FAIL = 255; exit $FAIL;
+    exit 255;
 }
 
-END {
-    exit($FAIL || abs($PLAN-$SUCC));
+sub done_testing
+{
+    undef $EXIT;
+    exit $FAIL;
 }
+
+$EXIT = sub {
+    exit($FAIL || abs($PLAN-$SUCC));
+};
+
+END { $EXIT->() if $EXIT; }
 
 1;
 __END__
@@ -106,6 +112,14 @@ Skip C<NUMBER> tests with reason C<MESSAGE>:
 
 Stop testing for C<REASON>.
 
+=head3 C<done_testing>
+
+Indicate that you finished running your tests.
+
+=head1 SEE ALSO
+
+L<Test::Simple>, L<Test::More>, L<Test::Builder>.
+
 =head1 AUTHOR
 
 Sean O'Rourke C<< <seano@cpan.org> >>.
@@ -117,12 +131,12 @@ should stay clean, clear, and under 5% of Test::Simple's lines (from
 F<Simple.pm>, F<Builder.pm>, and files in F<@INC/Builder>).  Current
 counts are:
 
-    Test::Tiny    48   SLOC, 129  lines
+    Test::Tiny    52   SLOC, 144  lines
     Test::Simple  1345 SLOC, 3612 lines
 
 =head1 COPYRIGHT
 
-Copyright (C) 2010, Sean O'Rourke.
+Copyright (C) 2010, 2011, Sean O'Rourke.
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 

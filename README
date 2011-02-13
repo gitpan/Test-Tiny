@@ -1,4 +1,4 @@
-Test::Tiny version 0.01
+Test::Tiny version 0.02
 
 INSTALLATION
 
@@ -15,7 +15,7 @@ None.
 
 COPYRIGHT AND LICENSE
 
-Copyright (C) 2010, Sean O'Rourke
+Copyright (C) 2010, 2011, Sean O'Rourke
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
